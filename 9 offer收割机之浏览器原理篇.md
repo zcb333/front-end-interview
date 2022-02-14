@@ -1197,21 +1197,6 @@ postMessage是HTML5 XMLHttpRequest Level 2中的API，且是为数不多可以�
 </script>
 ```
 
-```
-<script>
-    // 接收domain1的数据
-    window.addEventListener('message', function(e) {
-        alert('data from domain1 ---> ' + e.data);
-        var data = JSON.parse(e.data);
-        if (data) {
-            data.number = 16;
-            // 处理后再发回domain1
-            window.parent.postMessage(JSON.stringify(data), 'http://www.domain1.com');
-        }
-    }, false);
-</script>
-```
-
 #### （4）nginx代理跨域
 
 nginx代理跨域，实质和CORS跨域原理一样，通过配置文件设置请求响应头Access-Control-Allow-Origin…等字段。
