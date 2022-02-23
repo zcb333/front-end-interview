@@ -9,11 +9,11 @@
 <div onClick={this.handleClick.bind(this)}>点我</div>
 ```
 
-React并不是将click事件绑定到了div的真实DOM上，而是在document处监听了所有的事件，当事件发生并且冒泡到document处的时候，React将事件内容封装并交由真正的处理函数运行。这样的方式不仅仅减少了内存的消耗，还能在组件挂在销毁时统一订阅和移除事件。
+React并不是将click事件绑定到了div的真实DOM上，而是在document处监听了所有的事件，当事件发生并且冒泡到document处的时候，React将事件内容封装并交由真正的处理函数运行。这样的方式不仅仅减少了内存的消耗，还能在组件挂载销毁时统一订阅和移除事件。
 
 
 
-除此之外，冒泡到document上的事件也不是原生的浏览器事件，而是由react自己实现的合成事件（SyntheticEvent）。因此如果不想要是事件冒泡的话应该调用event.preventDefault()方法，而不是调用event.stopProppagation()方法。
+除此之外，冒泡到document上的事件也不是原生的浏览器事件，而是由react自己实现的合成事件（SyntheticEvent）。因此如果不想要是事件冒泡的话应该调用event.preventDefault()方法，而不是调用event.stopPropgation()方法。
 
 ![77fa6b2a59c92e160bc171f9c80783e7.jpg](https://cdn.nlark.com/yuque/0/2021/jpeg/1500604/1611890469312-7504e85d-c6db-481e-b9d3-5307a3de708c.jpeg)
 
@@ -103,7 +103,7 @@ const BlogPostWithSubscription = withSubscription(BlogPost,
 
 HOC的优缺点∶
 
-- 优点∶ 逻辑服用、不影响被包裹组件的内部逻辑。 
+- 优点∶ 逻辑复用、不影响被包裹组件的内部逻辑。 
 - 缺点∶ hoc传递给被包裹组件的props容易和被包裹后的组件重名，进而被覆盖 
 
 
@@ -199,8 +199,6 @@ React V15 在渲染时，会递归比对 VirtualDOM 树，找出需要变动的�
 
 - 分批延时对DOM进行操作，避免一次性操作大量 DOM 节点，可以得到更好的用户体验；
 - 给浏览器一点喘息的机会，它会对代码进行编译优化（JIT）及进行热代码优化，或者对 reflow 进行修正。
-
-####  
 
 **核心思想：**Fiber 也称协程或者纤程。它和线程并不一样，协程本身是没有并发或者并行能力的（需要配合线程），它只是一种控制流程的让出机制。让出 CPU 的执行权，让 CPU 能在这段时间执行其他的操作。渲染的过程可以被中断，可以将控制权交回浏览器，让位给高优先级的任务，浏览器空闲后再恢复渲染。
 
@@ -317,7 +315,7 @@ const BlogPostWithSubscription = withSubscription(BlogPost,
 
 - **权限控制：**利用高阶组件的 **条件渲染** 特性可以对页面进行权限控制，权限控制一般分为两个维度：页面级别和 页面元素级别
 
-```
+```jsx
 // HOC.js
 function withAdminAuth(WrappedComponent) {
     return class extends React.Component {
@@ -374,7 +372,7 @@ export default withAdminAuth(PageB);
 
 - **组件渲染性能追踪：**借助父组件子组件生命周期规则捕获子组件的生命周期，可以方便的对某个组件的渲染时间进行记录∶
 
-```
+```jsx
 class Home extends React.Component {
         render() {
             return (<h1>Hello World.</h1>);
@@ -451,7 +449,7 @@ export default withFetching(fetching('some-other-type'))(MovieList);
 
 setState 是 React 中最常用的命令，通常情况下，执行 setState 会触发 render。但是这里有个点值得关注，执行 setState 的时候不一定会重新渲染。当 setState 传入 null 时，并不会触发 render。
 
-```
+```jsx
 class App extends React.Component {
   state = {
     a: 1
@@ -492,6 +490,8 @@ class App extends React.Component {
 
 
 React 的处理 render 的基本思维模式是每次一有变动就会去重新渲染整个应用。在 Virtual DOM 没有出现之前，最简单的方法就是直接调用 innerHTML。Virtual DOM厉害的地方并不是说它比直接操作 DOM 快，而是说不管数据怎么变，都会尽量以最小的代价去更新 DOM。React 将 render 函数返回的虚拟 DOM 树与老的进行比较，从而确定 DOM 要不要更新、怎么更新。当 DOM 树很大时，遍历两棵树进行各种比对还是相当耗性能的，特别是在顶层 setState 一个微小的修改，默认会去遍历整棵树。尽管 React 使用高度优化的 Diff 算法，但是这个过程仍然会损耗性能.
+
+**（3）forceUpdate**
 
 ### 12. React如何判断什么时候重新渲染组件？
 
@@ -626,7 +626,7 @@ React.createClass会自绑定函数方法，导致不必要的性能开销，增
 
 > React 中的一个常见模式是一个组件返回多个元素。Fragments 允许你将子列表分组，而无需向 DOM 添加额外节点。
 
-```
+```jsx
 import React, { Component, Fragment } from 'react'
 
 // 一般形式
@@ -657,11 +657,12 @@ render() {
 
 - **字符串格式**：字符串格式，这是React16版本之前用得最多的，例如：`<p ref="info">span</p>`
 - **函数格式**：ref对应一个方法，该方法有一个参数，也就是对应的节点实例，例如：`<p ref={ele => this.info = ele}></p>`
-- **createRef方法**：React 16提供的一个API，使用React.createRef()来实现 　　　　　　  
+- **createRef方法**：React 16提供的一个API，使用React.createRef()来实现 
+- **函数组件:**　useRef　　　　　  
 
 ### 17. React中可以在render访问refs吗？为什么？
 
-```
+```jsx
 <>
   <span id="name" ref={this.spanRef}>{this.state.title}</span>
   <span>{
@@ -686,7 +687,7 @@ Portals 是React 16提供的官方解决方案，使得组件可以脱离父组�
 
 Portals语法如下：
 
-```
+```jsx
 ReactDOM.createPortal(child, container);
 ```
 
@@ -697,7 +698,7 @@ ReactDOM.createPortal(child, container);
 
 一般情况下，组件的render函数返回的元素会被挂载在它的父级组件上：
 
-```
+```jsx
 import DemoComponent from './DemoComponent';
 render() {
   // DemoComponent元素会被挂载在id为parent的div的元素上
@@ -711,7 +712,7 @@ render() {
 
 然而，有些元素需要被挂载在更高层级的位置。最典型的应用场景：当父组件具有`overflow: hidden`或者`z-index`的样式设置时，组件有可能被其他元素遮挡，这时就可以考虑要不要使用Portal使组件的挂载脱离父组件。例如：对话框，模态窗。
 
-```
+```jsx
 import DemoComponent from './DemoComponent';
 render() {
   // react会将DemoComponent组件直接挂载在真实的 dom 节点 domNode 上，生命周期还和16版本之前相同。
@@ -818,7 +819,7 @@ React官方的解释：
 
 例如，下面的代码在非受控组件中接收单个属性：
 
-```
+```jsx
 class NameForm extends React.Component {
   constructor(props) {
     super(props);
@@ -856,7 +857,7 @@ Refs 提供了一种方式，用于访问在 render 方法中创建的 React 元
 
 Refs 是使用 `React.createRef()` 方法创建的，他通过 `ref` 属性附加到 React 元素上。要在整个组件中使用 Refs，需要将 `ref` 在构造函数中分配给其实例属性：
 
-```
+```jsx
 class MyComponent extends React.Component {
   constructor(props) {
     super(props)
@@ -870,7 +871,7 @@ class MyComponent extends React.Component {
 
 由于函数组件没有实例，因此不能在函数组件上直接使用 `ref`：
 
-```
+```jsx
 function MyFunctionalComponent() {
   return <input />;
 }
@@ -890,7 +891,7 @@ class Parent extends React.Component {
 
 但可以通过闭合的帮助在函数组件内部进行使用 Refs：
 
-```
+```jsx
 function CustomTextInput(props) {
   // 这里必须声明 textInput，这样 ref 回调才可以引用它
   let textInput = null;
@@ -926,7 +927,7 @@ function CustomTextInput(props) {
 
 - 在构造函数中绑定this
 
-```
+```jsx
 constructor(props){
       super(props); 
        this.state={
@@ -952,7 +953,7 @@ constructor(props){
 
 - 函数调用是使用bind绑定this
 
-```
+```jsx
  <button onClick={this.getMsg.bind(this)}>点我</button>
 ```
 
@@ -967,7 +968,7 @@ constructor(props){
 
 所以，当在React class中需要设置state的初始值或者绑定事件时，需要加上构造函数，官方Demo：
 
-```
+```jsx
 class LikeButton extends React.Component {
   constructor() {
     super();
@@ -1051,7 +1052,7 @@ ReactComponent.prototype.setState = function (partialState, callback) {
 
 - `enqueueSetState` 方法将新的 `state` 放进组件的状态队列里，并调用 `enqueueUpdate` 来处理将要更新的实例对象；
 
-```
+```jsx
 enqueueSetState: function (publicInstance, partialState) {
   // 根据 this 拿到对应的组件实例
   var internalInstance = getInternalInstanceReadyForUpdate(publicInstance, 'setState');
@@ -1065,7 +1066,7 @@ enqueueSetState: function (publicInstance, partialState) {
 
 -  在 `enqueueUpdate` 方法中引出了一个关键的对象——`batchingStrategy`，该对象所具备的`isBatchingUpdates` 属性直接决定了当下是要走更新流程，还是应该排队等待；如果轮到执行，就调用 `batchedUpdates` 方法来直接发起更新流程。由此可以推测，`batchingStrategy` 或许正是 React 内部专门用于管控批量更新的对象。
 
-```
+```jsx
 function enqueueUpdate(component) {
   ensureInjected();
   // 注意这一句是问题的关键，isBatchingUpdates标识着当前是否处于批量创建/更新组件的阶段
@@ -1122,7 +1123,7 @@ setState 并不是单纯同步/异步的，它的表现会因调用场景的不�
 
 调用 `setState` 时，组件的 `state` 并不会立即改变， `setState` 只是把要修改的 `state` 放入一个队列， `React` 会优化真正的执行时机，并出于性能原因，会将 `React` 事件处理程序中的多次`React` 事件处理程序中的多次 `setState` 的状态修改合并成一次状态修改。 最终更新只产生一次组件及其子组件的重新渲染，这对于大型应用程序中的性能提升至关重要。
 
-```
+```jsx
 this.setState({
   count: this.state.count + 1    ===>    入队，[count+1的任务]
 });
@@ -1208,7 +1209,7 @@ this.state通常是用来初始化state的，this.setState是用来修改state�
 
 通过connect和mapStateToProps将state注入到组件中：
 
-```
+```jsx
 import { connect } from 'react-redux'
 import { setVisibilityFilter } from '@/reducers/Todo/actions'
 import Link from '@/containers/Todo/components/Link'
@@ -1245,7 +1246,7 @@ export default connect(
 
 **高阶组件实现源码∶**
 
-```
+```jsx
 import React from 'react'
 import PropTypes from 'prop-types'
 
@@ -1448,7 +1449,7 @@ static getDerivedStateFromProps(props, state)
 
 该函数会在装载时，接收到新的 `props` 或者调用了 `setState` 和 `forceUpdate` 时被调用。如当接收到新的属性想修改 `state` ，就可以使用。
 
-```
+```jsx
 // 当 props.counter 变化时，赋值给 state 
 class App extends React.Component {
   constructor(props) {
@@ -1775,7 +1776,7 @@ react的父级组件的render函数重新渲染会引起子组件的render方法
 
 使用方法如下：
 
-```
+```jsx
 shouldComponentUpdate(nexrProps) {
     if (this.props.num === nexrProps.num) {
         return false
@@ -1915,7 +1916,7 @@ React组件间通信常见的几种情况:
 
 **父组件向子组件通信**：父组件通过 props 向子组件传递需要的信息。
 
-```
+```jsx
 // 子组件: Child
 const Child = props =>{
   return <p>{props.name}</p>
@@ -1928,7 +1929,7 @@ const Parent = ()=>{
 
 **子组件向父组件通信**：: props+回调的方式。
 
-```
+```jsx
 // 子组件: Child
 const Child = props =>{
   const cb = msg =>{
@@ -1958,7 +1959,7 @@ class Parent extends Component {
 - 使用props，利用中间组件层层传递,但是如果父组件结构较深，那么中间每一层组件都要去传递props，增加了复杂度，并且这些props并不是中间组件自己需要的。
 - 使用context，context相当于一个大容器，可以把要通信的内容放在这个容器中，这样不管嵌套多深，都可以随意取用，对于跨越多层的全局数据可以使用context实现。
 
-```
+```jsx
 // context方式实现跨级组件通信 
 // Context 设计目的是为了共享那些对于一个组件树而言是“全局”的数据
 const BatteryContext = createContext();
