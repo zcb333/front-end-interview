@@ -172,7 +172,7 @@ undefined 在 JavaScript 中不是一个保留字，这意味着可以使用 und
 
 
 
-当对这两种类型使用 typeof 进行判断时，Null 类型化会返回 “object”，这是一个历史遗留的问题。当使用双等号对两种类型的值进行比较时会返回 true，使用三个等号时会返回 false。
+当对这两种类型使用 typeof 进行判断时，Null 类型会返回 “object”，这是一个历史遗留的问题。当使用双等号对两种类型的值进行比较时会返回 true，使用三个等号时会返回 false。
 
 ### 5. typeof null 的结果是什么，为什么？
 
